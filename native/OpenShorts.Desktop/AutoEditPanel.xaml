@@ -1,0 +1,58 @@
+<UserControl x:Class="OpenShorts.Desktop.AutoEditPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+ <ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel Margin="0,10,6,0" IsEnabled="{Binding CanEdit}">
+  <TextBlock Text="AI Auto Edit" Style="{StaticResource EditorHeading}"/>
+  <CheckBox Content="Enable AI Auto Edit" IsChecked="{Binding AutoEditEnabled}"/>
+  <ComboBox ItemsSource="{Binding AutoEditProfiles}" SelectedItem="{Binding AutoEditProfile}"/>
+  <WrapPanel><CheckBox Content="Auto zoom" IsChecked="{Binding AutoZoom}" Margin="0,0,12,8"/><CheckBox Content="Auto camera tracking" IsChecked="{Binding AutoTracking}" Margin="0,0,12,8"/><CheckBox Content="Auto transitions" IsChecked="{Binding AutoTransitions}" Margin="0,0,12,8"/><CheckBox Content="Auto text emphasis" IsChecked="{Binding AutoText}" Margin="0,0,12,8"/><CheckBox Content="Auto audio accents" IsChecked="{Binding AutoAudio}" Margin="0,0,12,8" ToolTip="Only supported, licensed audio decisions are applied. No bundled sound accents are currently available."/></WrapPanel>
+  <TextBlock Text="{Binding AutoEditStatus}" Style="{StaticResource Hint}"/>
+  <WrapPanel><Button Content="Regenerate effects" Command="{Binding RegenerateAutoEffectsCommand}"/><Button Content="Remove AI effects" Command="{Binding RemoveAutoEffectsCommand}"/></WrapPanel>
+  <ListBox ItemsSource="{Binding AutoEffects}" SelectedItem="{Binding SelectedAutoEffect}" DisplayMemberPath="Type" MaxHeight="145"/>
+  <TextBlock Text="{Binding SelectedAutoEffect.Reason}" Style="{StaticResource Hint}"/>
+  <CheckBox Content="Selected effect enabled" IsChecked="{Binding SelectedAutoEffect.Enabled}"/>
+  <UniformGrid Columns="2"><StackPanel><TextBlock Text="In · clip seconds" Style="{StaticResource EditorLabel}"/><TextBox Text="{Binding SelectedAutoEffect.Start,ValidatesOnExceptions=True,NotifyOnValidationError=True}"/></StackPanel><StackPanel><TextBlock Text="Out · clip seconds" Style="{StaticResource EditorLabel}"/><TextBox Text="{Binding SelectedAutoEffect.End,ValidatesOnExceptions=True,NotifyOnValidationError=True}"/></StackPanel></UniformGrid>
+  <TextBlock Text="Intensity" Style="{StaticResource EditorLabel}"/><Slider Minimum="0" Maximum="1" Value="{Binding SelectedAutoEffect.Intensity}" Style="{StaticResource EditorSlider}"/>
+  <WrapPanel><Button Content="Preview selected" Command="{Binding PreviewAutoEffectCommand}"/><Button Content="Remove selected" Command="{Binding RemoveSelectedAutoEffectCommand}"/></WrapPanel>
+  <Expander Header="Effect limits"><StackPanel>
+   <TextBlock Text="Maximum effects (0–24)" Style="{StaticResource EditorLabel}"/><TextBox Text="{Binding AutoMaxEffects,ValidatesOnExceptions=True,NotifyOnValidationError=True}"/>
+   <TextBlock Text="Camera gap (seconds)" Style="{StaticResource EditorLabel}"/><TextBox Text="{Binding AutoCameraGap,ValidatesOnExceptions=True,NotifyOnValidationError=True}"/>
+   <TextBlock Text="Maximum zoom (1–1.18)" Style="{StaticResource EditorLabel}"/><TextBox Text="{Binding AutoMaxZoom,ValidatesOnExceptions=True,NotifyOnValidationError=True}"/>
+   <TextBlock Text="Maximum shake (0–0.006)" Style="{StaticResource EditorLabel}"/><TextBox Text="{Binding AutoMaxShake,ValidatesOnExceptions=True,NotifyOnValidationError=True}"/>
+   <TextBlock Text="Minimum / maximum effect duration" Style="{StaticResource EditorLabel}"/><TextBox Text="{Binding AutoMinDuration,ValidatesOnExceptions=True,NotifyOnValidationError=True}"/><TextBox Text="{Binding AutoMaxDuration,ValidatesOnExceptions=True,NotifyOnValidationError=True}"/>
+   <TextBlock Text="Evidence confidence threshold (0.5–1)" Style="{StaticResource EditorLabel}"/><TextBox Text="{Binding AutoMotionSensitivity,ValidatesOnExceptions=True,NotifyOnValidationError=True}"/>
+  </StackPanel></Expander>
+  <TextBlock Text="Changes use undo/redo and autosave. Regeneration preserves manual effect edits. Uncertain scenes retain their original composition." Style="{StaticResource Hint}"/>
+  <Expander Header="AI Learning · local foundation"><StackPanel Margin="0,6,0,0">
+   <TextBlock Text="{Binding LearningStatus}" Style="{StaticResource Hint}"/>
+   <TextBlock Text="{Binding LearningDetails}" Style="{StaticResource Hint}"/>
+   <CheckBox Content="Collect explicit local feedback" IsChecked="{Binding LearningCollect}"/>
+   <CheckBox Content="Retrieve reviewed local examples" IsChecked="{Binding LearningRetrieve}"/>
+   <CheckBox Content="Use an explicitly activated local model" IsChecked="{Binding LearningInference}"/>
+   <WrapPanel><Button Content="Refresh / snapshot selected" Command="{Binding RefreshLearningCommand}"/><Button Content="Save privacy" Command="{Binding SaveLearningPrivacyCommand}"/></WrapPanel>
+   <TextBlock Text="Refresh before a correction. Select an effect, or leave none selected to approve no effect. Undo, autosave and unchanged effects are never approvals." Style="{StaticResource Hint}"/>
+   <WrapPanel><Button Content="Approve recommendation" Command="{Binding ApproveLearningCommand}"/><Button Content="Reject recommendation" Command="{Binding RejectLearningCommand}"/></WrapPanel>
+   <ComboBox ItemsSource="{Binding LearningCorrectionActions}" SelectedItem="{Binding LearningCorrectionAction}"/>
+   <Slider Minimum="0" Maximum="5" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding LearningRating}" Style="{StaticResource EditorSlider}"/>
+   <Button Content="Record explicit correction / rating" Command="{Binding RecordLearningCorrectionCommand}"/>
+   <WrapPanel><Button Content="Train candidate" Command="{Binding StartLearningTrainingCommand}"/><Button Content="Training status" Command="{Binding CheckLearningTrainingCommand}"/><Button Content="Cancel training" Command="{Binding CancelLearningTrainingCommand}"/></WrapPanel>
+   <Expander Header="Highlight ranking · explicit clip feedback"><StackPanel>
+    <TextBlock Text="{Binding HighlightLearningStatus}" Style="{StaticResource Hint}"/>
+    <Button Content="Snapshot current clip" Command="{Binding SnapshotClipLearningCommand}"/>
+    <WrapPanel><Button Content="Accept clip" Command="{Binding RecordClipLearningCommand}" CommandParameter="accept"/><Button Content="Reject clip" Command="{Binding RecordClipLearningCommand}" CommandParameter="reject"/><Button Content="Record quality rating" Command="{Binding RecordClipLearningCommand}" CommandParameter="rating"/></WrapPanel>
+    <ComboBox ItemsSource="{Binding ClipRejectionReasons}" SelectedItem="{Binding ClipRejectionReason}"/>
+    <TextBlock Text="Preferred trim · source seconds (feedback only)" Style="{StaticResource Hint}"/>
+    <TextBox Text="{Binding ClipReviewStart,ValidatesOnExceptions=True,NotifyOnValidationError=True}"/><TextBox Text="{Binding ClipReviewEnd,ValidatesOnExceptions=True,NotifyOnValidationError=True}"/>
+    <Button Content="Record boundary correction" Command="{Binding RecordClipLearningCommand}" CommandParameter="trim"/>
+    <ComboBox ItemsSource="{Binding ClipAlternatives}" SelectedItem="{Binding ClipAlternative}"/>
+    <Button Content="Prefer selected alternative" Command="{Binding RecordClipLearningCommand}" CommandParameter="alternative"/>
+    <ComboBox ItemsSource="{Binding ClipReviewCategories}" SelectedItem="{Binding ClipReviewCategory}"/>
+    <WrapPanel><Button Content="Record category" Command="{Binding RecordClipLearningCommand}" CommandParameter="category"/><Button Content="Record caption preference" Command="{Binding RecordClipLearningCommand}" CommandParameter="caption_style"/></WrapPanel>
+    <Button Content="Train highlight candidate · stays OFF" Command="{Binding TrainHighlightRankerCommand}"/>
+    <TextBox Text="{Binding LearningModelId}" ToolTip="Full evaluated model ID"/>
+    <WrapPanel><Button Content="Approve evaluated model" Command="{Binding TransitionLearningModelCommand}" CommandParameter="approved"/><Button Content="Activate approved model" Command="{Binding TransitionLearningModelCommand}" CommandParameter="active"/><Button Content="Roll back model" Command="{Binding TransitionLearningModelCommand}" CommandParameter="rolled_back"/></WrapPanel>
+    <TextBlock Text="Only explicit acceptance/rejection becomes a binary label. Alternative preferences, ratings, trims, styles and autosave remain separate. Category-specific models require sufficient reviewed data. Raw model scores are not calibrated confidence." Style="{StaticResource Hint}"/>
+   </StackPanel></Expander>
+   <Button Content="Delete local learning data…" Command="{Binding DeleteLearningHistoryCommand}"/>
+   <TextBlock Text="Collecting feedback is separate from training. Production ML is disabled until a real reviewed model passes held-out evaluation and explicit approval. No learning data is uploaded." Style="{StaticResource Hint}"/>
+  </StackPanel></Expander>
+ </StackPanel></ScrollViewer>
+</UserControl>

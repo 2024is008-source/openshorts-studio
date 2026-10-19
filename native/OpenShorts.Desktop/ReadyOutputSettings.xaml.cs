@@ -1,0 +1,1 @@
+namespace OpenShorts.Desktop; public partial class ReadyOutputSettings : System.Windows.Controls.UserControl { public ReadyOutputSettings(){InitializeComponent();} }

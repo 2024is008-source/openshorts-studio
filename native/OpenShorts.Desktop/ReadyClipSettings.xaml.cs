@@ -1,0 +1,1 @@
+namespace OpenShorts.Desktop; public partial class ReadyClipSettings : System.Windows.Controls.UserControl { public ReadyClipSettings(){InitializeComponent();} }

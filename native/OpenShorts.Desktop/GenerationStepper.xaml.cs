@@ -1,0 +1,1 @@
+namespace OpenShorts.Desktop; public partial class GenerationStepper : System.Windows.Controls.UserControl { public GenerationStepper(){InitializeComponent();} }

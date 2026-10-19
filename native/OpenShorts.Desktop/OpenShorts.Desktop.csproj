@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+ <PropertyGroup><OutputType>WinExe</OutputType><UseWPF>true</UseWPF><ApplicationIcon>../../assets/desktop.ico</ApplicationIcon></PropertyGroup>
+ <ItemGroup>
+  <Resource Include="Assets/Studio/*.png" />
+  <Resource Include="Assets/Lucide/*.svg" />
+  <Content Include="Assets/Lucide/LICENSE.txt" CopyToOutputDirectory="PreserveNewest" />
+  <Content Include="Assets/Lucide/provenance.json" CopyToOutputDirectory="PreserveNewest" />
+  <Resource Include="../../fonts/Anton-Regular.ttf" Link="Assets/Fonts/Anton-Regular.ttf" />
+  <ProjectReference Include="../OpenShorts.Core/OpenShorts.Core.csproj" />
+  <ProjectReference Include="../OpenShorts.Infrastructure/OpenShorts.Infrastructure.csproj" />
+  <ProjectReference Include="../OpenShorts.EngineBridge/OpenShorts.EngineBridge.csproj" />
+  <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+  <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+  <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.0" />
+  <PackageReference Include="LibVLCSharp.WPF" Version="3.10.2" />
+  <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.21" />
+ </ItemGroup>
+</Project>

@@ -1,0 +1,1 @@
+namespace OpenShorts.Desktop; public partial class ReadyAiOptions : System.Windows.Controls.UserControl { public ReadyAiOptions(){InitializeComponent();} }

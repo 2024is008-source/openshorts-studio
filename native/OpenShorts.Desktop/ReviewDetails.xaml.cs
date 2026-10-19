@@ -1,0 +1,1 @@
+namespace OpenShorts.Desktop; public partial class ReviewDetails : System.Windows.Controls.UserControl { public ReviewDetails(){InitializeComponent();} }
