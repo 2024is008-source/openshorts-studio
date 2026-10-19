@@ -1,0 +1,500 @@
+"""Transcription backends: NVIDIA Parakeet (onnx-asr) with faster-whisper fallback.
+
+Every caller goes through transcribe_media(), which returns the transcript
+contract the whole pipeline depends on:
+
+    {
+      "text": str,          # full punctuated transcript
+      "language": str,      # whisper-style short code ("es", "en", ...)
+      "segments": [
+        {"start": float, "end": float, "text": str,
+         "words": [{"word": str, "start": float, "end": float}, ...]},
+      ],
+    }
+
+Invariants the consumers rely on (clip cutting, karaoke subtitles, Remotion):
+  - word["word"] carries a LEADING SPACE on true word starts; continuation
+    fragments are merged into their base word (merge_continuation_words).
+  - all numerics are native Python floats (json.dump of the transcript).
+  - words sorted by start, segments chronological, absolute file timestamps.
+
+TRANSCRIBE_BACKEND env: "whisper" (default) | "parakeet".
+The parakeet path falls back to whisper automatically when the model errors,
+produces no usable words, or the detected language is outside its 25
+supported European languages (e.g. Japanese/Chinese/Arabic uploads).
+GPU whisper in turn falls back to CPU whisper on CUDA errors (VRAM is shared
+with other models on the host, so loads can OOM under load).
+"""
+import os
+import copy
+import json
+import math
+import subprocess
+import sys
+import tempfile
+import threading
+import time
+import traceback
+
+from subtitles import (
+    get_whisper_config,
+    WHISPER_TRANSCRIBE_PARAMS,
+    merge_continuation_words,
+)
+
+PARAKEET_MODEL_ID = "nemo-parakeet-tdt-0.6b-v3"
+
+# The 25 European languages parakeet-tdt-0.6b-v3 supports (ISO 639-1).
+PARAKEET_LANGS = {
+    "bg", "hr", "cs", "da", "nl", "en", "et", "fi", "fr", "de", "el", "hu",
+    "it", "lv", "lt", "mt", "pl", "pt", "ro", "sk", "sl", "es", "sv", "ru",
+    "uk",
+}
+
+# Serializes GPU transcription across concurrent jobs so N jobs can't stack
+# N model contexts / decode batches in VRAM. CPU whisper stays ungated
+# (CTranslate2 models are thread-safe and that matches the old behavior).
+_ASR_SLOTS = int(os.environ.get("ASR_GPU_CONCURRENCY", "1"))
+_ASR_GATE = threading.Semaphore(_ASR_SLOTS)
+
+
+class _NullGate:
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+
+_NULL_GATE = _NullGate()
+
+
+class _TranscribeProgress:
+    """Emits '🎙️ Transcribing… NN% (Xs)' lines at 25% steps.
+
+    These are the only transcription lines cloud users see (log_view keeps
+    them), so they must stay free of technical detail.
+    """
+
+    def __init__(self, total_seconds):
+        self.total = max(float(total_seconds or 0), 0.0)
+        self.started = time.time()
+        self.next_pct = 25
+
+    def update(self, position_seconds):
+        if self.total <= 0:
+            return
+        pct = min(int(position_seconds / self.total * 100), 100)
+        while pct >= self.next_pct and self.next_pct <= 100:
+            elapsed = int(time.time() - self.started)
+            print(f"🎙️ Transcribing… {self.next_pct}% ({elapsed}s)", flush=True)
+            self.next_pct += 25
+
+# --- whisper singleton ------------------------------------------------------
+
+_whisper_model = None
+_whisper_key = None
+_whisper_lock = threading.Lock()
+# Set after a CUDA failure (e.g. VRAM exhausted by other models on the GPU)
+# so every later transcription goes straight to CPU instead of re-failing.
+_whisper_force_cpu = False
+
+
+def _get_whisper_model():
+    """Process-wide WhisperModel singleton, rebuilt if the env config changes.
+
+    Keeping the model resident avoids a full reload per transcription (which
+    on GPU would also mean re-allocating a couple of GB of VRAM per job).
+    """
+    global _whisper_model, _whisper_key
+    cfg = get_whisper_config()
+    if _whisper_force_cpu:
+        cfg["device"] = "cpu"
+        cfg["compute_type"] = "int8"
+    key = (cfg["model_size"], cfg["device"], cfg["compute_type"])
+    if os.environ.get('OPENSHORTS_DESKTOP')=='1' and not os.path.isdir(str(key[0])):
+        raise RuntimeError('Prepare the local speech model in Settings before transcription. Model downloads require user confirmation.')
+    with _whisper_lock:
+        if _whisper_model is None or _whisper_key != key:
+            from faster_whisper import WhisperModel
+            _whisper_model = WhisperModel(key[0], device=key[1], compute_type=key[2])
+            _whisper_key = key
+    return _whisper_model, cfg["device"]
+
+
+def _whisper_device():
+    return "cpu" if _whisper_force_cpu else get_whisper_config()["device"]
+
+
+def _run_whisper_once(media_path, **params):
+    gate = _ASR_GATE if _whisper_device() != "cpu" else _NULL_GATE
+    # The model is fetched inside the gate: release_models() drains the gate
+    # before unloading, so a transcription can never start on a model that is
+    # being dropped underneath it.
+    with gate:
+        model, _device = _get_whisper_model()
+        segments, info = model.transcribe(media_path, **params)
+        progress = _TranscribeProgress(getattr(info, "duration", 0))
+        materialized = []
+        for segment in segments:
+            materialized.append(segment)
+            progress.update(segment.end)
+        # VAD trims trailing silence, so the last segment can end short of the
+        # media duration — force the 100% line.
+        progress.update(progress.total)
+        return materialized, info
+
+
+def run_whisper_transcription(media_path, **params):
+    """Transcribe on NVIDIA GPU when available, with a diagnostic CPU fallback."""
+    global _whisper_model, _whisper_force_cpu
+    cfg = get_whisper_config()
+    print(
+        f"🧠 [ASR] Whisper config: model={cfg['model_size']} "
+        f"device={('cpu' if _whisper_force_cpu else cfg['device'])} "
+        f"compute={('int8' if _whisper_force_cpu else cfg['compute_type'])}",
+        flush=True,
+    )
+    try:
+        return _run_whisper_once(media_path, **params)
+    except Exception as e:
+        device = _whisper_device()
+        lower = str(e).lower()
+        gpu_error = device != "cpu" and any(token in lower for token in (
+            "cuda", "cudnn", "cublas", "ctranslate2", "out of memory",
+            "no kernel image", "driver version", "dll", "library",
+        ))
+        print(f"❌ [ASR] Whisper failed: {type(e).__name__}: {e}", flush=True)
+        print("[ASR TRACEBACK]", flush=True)
+        print(traceback.format_exc(), flush=True)
+        if _whisper_force_cpu or not gpu_error:
+            raise
+        print("⚠️ [ASR] NVIDIA transcription failed; releasing GPU model and retrying on CPU...", flush=True)
+        _whisper_force_cpu = True
+        with _whisper_lock:
+            _whisper_model = None
+        try:
+            result = _run_whisper_once(media_path, **params)
+            print("✅ [ASR] CPU fallback succeeded.", flush=True)
+            return result
+        except Exception as cpu_error:
+            print(f"❌ [ASR] CPU fallback also failed: {type(cpu_error).__name__}: {cpu_error}", flush=True)
+            print("[ASR CPU TRACEBACK]", flush=True)
+            print(traceback.format_exc(), flush=True)
+            raise
+
+
+def _transcribe_with_whisper(media_path):
+    segments, info = run_whisper_transcription(media_path, **WHISPER_TRANSCRIBE_PARAMS)
+
+    out_segments = []
+    text_parts = []
+    for segment in segments:
+        words = [
+            {"word": w.word, "start": float(w.start), "end": float(w.end)}
+            for w in (segment.words or [])
+        ]
+        out_segments.append({
+            "start": float(segment.start),
+            "end": float(segment.end),
+            "text": segment.text,
+            "words": merge_continuation_words(words),
+        })
+        text_parts.append(segment.text.strip())
+
+    return {
+        "text": " ".join(part for part in text_parts if part),
+        "language": info.language,
+        "segments": out_segments,
+    }
+
+
+# --- parakeet ---------------------------------------------------------------
+
+_parakeet_model = None
+_parakeet_lock = threading.Lock()
+
+
+def _get_parakeet_model():
+    global _parakeet_model
+    with _parakeet_lock:
+        if _parakeet_model is None:
+            import onnx_asr
+            model = onnx_asr.load_model(
+                PARAKEET_MODEL_ID,
+                providers=["CUDAExecutionProvider", "CPUExecutionProvider"],
+            )
+            vad = onnx_asr.load_vad("silero")
+            _parakeet_model = model.with_vad(vad).with_timestamps()
+    return _parakeet_model
+
+
+def release_models():
+    """Drop the resident ASR models and hand their VRAM back to the GPU.
+
+    main.py runs one job per process, so its singletons die with the job.
+    The API process is different: ``/api/subtitle`` on a dubbed clip and the
+    thumbnail studio transcribe in-process, and after the first such request
+    the models sit in the long-lived uvicorn process for good. Measured in
+    prod on 17-sep-2026: the API held 7.7 GB of a 20 GB GPU while idle
+    (ctranslate2 whisper + onnxruntime CUDA parakeet + torch), and with eight
+    jobs running alongside it NVENC could not open a session ("Generic error
+    in an external library", exit 187, 0 bytes) and TransNetV2 hit CUDA OOM:
+    5 of 12 jobs failed. The API calls this after each in-process
+    transcription; a job process never needs to.
+
+    Drains every gate slot first, so no transcription is mid-decode on the
+    model being dropped, and both loaders fetch their model inside the gate.
+    """
+    global _whisper_model, _whisper_key, _parakeet_model
+    for _ in range(_ASR_SLOTS):
+        _ASR_GATE.acquire()
+    try:
+        with _whisper_lock:
+            whisper, _whisper_model, _whisper_key = _whisper_model, None, None
+        with _parakeet_lock:
+            parakeet, _parakeet_model = _parakeet_model, None
+    finally:
+        for _ in range(_ASR_SLOTS):
+            _ASR_GATE.release()
+    if whisper is not None:
+        try:
+            # ctranslate2 frees the weights on unload, not on garbage
+            # collection: the Python wrapper can outlive the last reference.
+            whisper.model.unload_model()
+        except Exception as e:
+            print(f"⚠️ [ASR] whisper unload failed ({type(e).__name__}: {e})")
+    del whisper, parakeet
+    import gc
+    gc.collect()
+    try:
+        import torch
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+    except Exception:
+        pass
+    if "onnxruntime" in sys.modules or "faster_whisper" in sys.modules:
+        print("🧹 [ASR] resident models released")
+
+
+def _extract_wav(media_path):
+    """Parakeet wants 16kHz mono PCM wav; ffmpeg-extract to a temp file."""
+    fd, wav_path = tempfile.mkstemp(suffix=".wav", prefix="asr_")
+    os.close(fd)
+    cmd = [
+        "ffmpeg", "-y", "-loglevel", "error", "-i", media_path,
+        "-vn", "-ac", "1", "-ar", "16000", "-c:a", "pcm_s16le", wav_path,
+    ]
+    subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL,
+                   stderr=subprocess.PIPE, timeout=1800)
+    return wav_path
+
+
+def _words_from_tokens(tokens, timestamps, seg_start, seg_end):
+    """Group parakeet BPE tokens into words with absolute timestamps.
+
+    Verified on the prod model: tokens already carry the leading-space
+    word-start convention (" T", "odo", " el", ...) and timestamps are token
+    START times in seconds relative to the VAD segment. A token without a
+    leading space (subword continuations, punctuation like ",") belongs to
+    the previous word — same semantics merge_continuation_words expects.
+    Word end is inferred: next word's start, capped near the word's last
+    token so a long inter-word silence doesn't stretch the highlight.
+    """
+    words = []
+    last_token_ts = []
+    for token, ts in zip(tokens, timestamps):
+        if not token:
+            continue
+        abs_ts = float(ts) + seg_start
+        if token.startswith(" ") or not words:
+            words.append({
+                "word": token if token.startswith(" ") else " " + token,
+                "start": abs_ts,
+            })
+            last_token_ts.append(abs_ts)
+        else:
+            words[-1]["word"] += token
+            last_token_ts[-1] = abs_ts
+
+    for i, word in enumerate(words):
+        next_start = words[i + 1]["start"] if i + 1 < len(words) else seg_end
+        cap = last_token_ts[i] + 0.6
+        word["end"] = float(max(word["start"] + 0.05, min(next_start, cap)))
+
+    return words
+
+
+def _transcribe_with_parakeet(media_path):
+    wav_path = _extract_wav(media_path)
+    try:
+        # 16kHz mono s16le wav -> 32000 bytes per second of audio.
+        try:
+            duration = os.path.getsize(wav_path) / 32000.0
+        except OSError:
+            duration = 0.0
+        with _ASR_GATE:
+            model = _get_parakeet_model()  # inside the gate: see release_models
+            progress = _TranscribeProgress(duration)
+            results = []
+            for seg in model.recognize(wav_path):
+                results.append(seg)
+                progress.update(float(seg.end))
+            progress.update(progress.total)
+    finally:
+        try:
+            os.remove(wav_path)
+        except OSError:
+            pass
+
+    out_segments = []
+    text_parts = []
+    for seg in results:
+        seg_start = float(seg.start)
+        seg_end = float(seg.end)
+        seg_text = str(seg.text or "").strip()
+        if not seg_text:
+            continue
+        out_segments.append({
+            "start": seg_start,
+            "end": seg_end,
+            "text": seg_text,
+            "words": _words_from_tokens(
+                list(seg.tokens or []), list(seg.timestamps or []),
+                seg_start, seg_end,
+            ),
+        })
+        text_parts.append(seg_text)
+
+    text = " ".join(text_parts)
+    return {
+        "text": text,
+        "language": _detect_language(text),
+        "segments": out_segments,
+    }
+
+
+def _detect_language(text):
+    """Parakeet doesn't report a language; classify the transcribed text.
+
+    py3langid is pure-Python and returns ISO 639-1 codes compatible with the
+    whisper codes the pipeline expects (thumbnail titles, Gemini prompts).
+    """
+    sample = (text or "").strip()
+    if len(sample) < 20:
+        return "en"
+    try:
+        import py3langid
+        lang, _score = py3langid.classify(sample[:4000])
+        return lang
+    except Exception:
+        return "en"
+
+
+def _parakeet_fallback_reason(transcript, duration_hint=None):
+    """Return why the parakeet result is untrustworthy, or None if it's fine."""
+    segments = transcript.get("segments") or []
+    total_words = sum(len(s.get("words") or []) for s in segments)
+    if total_words == 0:
+        return "no words recognized"
+    language = transcript.get("language")
+    if language not in PARAKEET_LANGS:
+        return f"language '{language}' outside parakeet's supported set"
+    duration = duration_hint or (segments[-1]["end"] if segments else 0)
+    # Real speech averages >100 wpm; under ~12 wpm on a long video means the
+    # audio was mostly not recognized (e.g. unsupported language or music).
+    if duration > 60 and total_words < duration * 0.2:
+        return f"only {total_words} words in {duration:.0f}s of audio"
+    return None
+
+
+# --- public entry point -----------------------------------------------------
+
+class NoAudioError(Exception):
+    """The media has no audio track — nothing to transcribe."""
+
+
+def _has_audio_stream(media_path) -> bool:
+    """True if the file has at least one audio stream (ffprobe)."""
+    import subprocess
+    try:
+        out = subprocess.run(
+            ["ffprobe", "-v", "error", "-select_streams", "a",
+             "-show_entries", "stream=index", "-of", "csv=p=0", media_path],
+            capture_output=True, text=True, timeout=60,
+        )
+        return bool(out.stdout.strip())
+    except Exception:
+        return True  # probe failed — don't block, let the backend try
+
+
+def transcribe_media(media_path):
+    """Transcribe with the configured backend, falling back to whisper."""
+    try:
+        import torch
+        cuda_ok = bool(torch.cuda.is_available())
+        gpu_name = torch.cuda.get_device_name(0) if cuda_ok else "none"
+        print(f"🖥️ [GPU] CUDA available={cuda_ok} device={gpu_name}", flush=True)
+        if cuda_ok:
+            try:
+                props = torch.cuda.get_device_properties(0)
+                print(f"🖥️ [GPU] VRAM={props.total_memory / (1024**3):.1f} GB compute={props.major}.{props.minor}", flush=True)
+            except Exception:
+                pass
+    except Exception as e:
+        print(f"⚠️ [GPU] PyTorch CUDA check failed: {type(e).__name__}: {e}", flush=True)
+    # Silent videos (AI-generated clips, muted screen recordings) have no audio
+    # stream; every ASR backend then crashes deep inside libav with an opaque
+    # "tuple index out of range". Detect it up front and fail with a clear,
+    # actionable reason instead.
+    if not _has_audio_stream(media_path):
+        raise NoAudioError(
+            "This video has no audio track. OpenShorts finds viral moments from "
+            "speech, so it needs a video with audio.")
+
+    backend = os.environ.get("TRANSCRIBE_BACKEND", "whisper").strip().lower()
+
+    if backend == "parakeet":
+        try:
+            transcript = _transcribe_with_parakeet(media_path)
+            reason = _parakeet_fallback_reason(transcript)
+            if reason is None:
+                print(f"🎙️ [ASR] parakeet ok: lang={transcript['language']} "
+                      f"segments={len(transcript['segments'])}")
+                return _anchor_audio_clock(media_path,transcript)
+            print(f"⚠️ [ASR] parakeet result rejected ({reason}) — "
+                  f"falling back to whisper")
+        except Exception as e:
+            print(f"⚠️ [ASR] parakeet failed ({type(e).__name__}: {e}) — "
+                  f"falling back to whisper")
+
+    return _anchor_audio_clock(media_path,_transcribe_with_whisper(media_path))
+
+
+def _anchor_audio_clock(media_path,transcript):
+    """ASR sample zero -> source playback clock, preserving original offsets.
+
+    Whisper/Parakeet consume decoded PCM samples. Container audio that starts
+    after the media origin needs that observed delay added once. Cached legacy
+    transcripts remain unchanged; unavailable timing falls back safely.
+    """
+    if (os.getenv('CAPTION_MEDIA_CLOCK','1')=='0' or not os.path.isfile(media_path)
+        or not isinstance(transcript,dict) or not transcript.get('segments')
+        or transcript.get('timestamp_origin')=='media-start'):return transcript
+    try:
+        raw=subprocess.check_output(['ffprobe','-v','error','-show_entries',
+            'stream=codec_type,start_time:format=start_time','-of','json',str(media_path)],timeout=30)
+        info=json.loads(raw)
+        audio=next(s for s in info.get('streams',[]) if s.get('codec_type')=='audio')
+        origin=float(info.get('format',{}).get('start_time') or 0)
+        delay=max(0.,float(audio.get('start_time') or origin)-origin)
+        if not math.isfinite(delay) or delay>3600:return transcript
+        anchored=copy.deepcopy(transcript)
+        for segment in anchored['segments']:
+            for entry in [segment,*(segment.get('words') or [])]:
+                for field in ('start','end'):
+                    if isinstance(entry.get(field),(int,float)) and math.isfinite(entry[field]):
+                        entry[field]=round(float(entry[field])+delay,6)
+        anchored.update(timestamp_origin='media-start',audio_offset_seconds=delay)
+        return anchored
+    except (OSError,subprocess.SubprocessError,ValueError,TypeError,KeyError,AttributeError,StopIteration):return transcript
