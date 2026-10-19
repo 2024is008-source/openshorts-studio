@@ -1,0 +1,307 @@
+[
+  {
+    "version": 1,
+    "id": "creator-energy",
+    "name": "OpenShorts Creator Energy",
+    "fonts": {
+      "family": "Arial",
+      "caption_size": 58.0,
+      "hook_scale": 1.0
+    },
+    "colors": {
+      "base": "#15191E",
+      "text": "#FFFFFF",
+      "primary": "#00D9EC",
+      "secondary": "#FFE500",
+      "outline": "#111418"
+    },
+    "borders": {
+      "width": 3.0,
+      "shadow": 1.0
+    },
+    "safe": {
+      "side": 0.12,
+      "top": 0.12,
+      "bottom": 0.2
+    },
+    "hook": {
+      "enabled": true,
+      "panel": false,
+      "animation": "scale-pop",
+      "y": 0.06,
+      "seconds": 3.0
+    },
+    "captions": {
+      "preset": "openshorts-dynamic",
+      "position": "bottom",
+      "max_lines": 2,
+      "max_words": 5
+    },
+    "motion": {
+      "accent": "line",
+      "entrance": "fade",
+      "seconds": 2.0
+    },
+    "layout": {
+      "preference": "preserve",
+      "split_supported": true
+    },
+    "logo": {
+      "enabled": false,
+      "text": "OpenShorts",
+      "position": "top-left"
+    },
+    "transition": "cut",
+    "audio": {
+      "preset": "natural",
+      "target": -16.0,
+      "ceiling": -2.0,
+      "fade": 0.0,
+      "noise": false
+    }
+  },
+  {
+    "version": 1,
+    "id": "minimal-studio",
+    "name": "OpenShorts Minimal Studio",
+    "fonts": {
+      "family": "Arial",
+      "caption_size": 50.0,
+      "hook_scale": 1.0
+    },
+    "colors": {
+      "base": "#171A20",
+      "text": "#FFFFFF",
+      "primary": "#FFFFFF",
+      "secondary": "#B5C2CC",
+      "outline": "#111418"
+    },
+    "borders": {
+      "width": 1.0,
+      "shadow": 0.5
+    },
+    "safe": {
+      "side": 0.12,
+      "top": 0.12,
+      "bottom": 0.2
+    },
+    "hook": {
+      "enabled": true,
+      "panel": false,
+      "animation": "fade",
+      "y": 0.06,
+      "seconds": 3.0
+    },
+    "captions": {
+      "preset": "minimal",
+      "position": "bottom",
+      "max_lines": 2,
+      "max_words": 6
+    },
+    "motion": {
+      "accent": "none",
+      "entrance": "none",
+      "seconds": 2.0
+    },
+    "layout": {
+      "preference": "preserve",
+      "split_supported": true
+    },
+    "logo": {
+      "enabled": false,
+      "text": "OpenShorts",
+      "position": "top-left"
+    },
+    "transition": "cut",
+    "audio": {
+      "preset": "natural",
+      "target": -16.0,
+      "ceiling": -2.0,
+      "fade": 0.0,
+      "noise": false
+    }
+  },
+  {
+    "version": 1,
+    "id": "story-focus",
+    "name": "OpenShorts Story Focus",
+    "fonts": {
+      "family": "Georgia",
+      "caption_size": 52.0,
+      "hook_scale": 1.0
+    },
+    "colors": {
+      "base": "#15191E",
+      "text": "#FFFFFF",
+      "primary": "#E8D7B5",
+      "secondary": "#00D9EC",
+      "outline": "#111418"
+    },
+    "borders": {
+      "width": 3.0,
+      "shadow": 1.0
+    },
+    "safe": {
+      "side": 0.12,
+      "top": 0.12,
+      "bottom": 0.2
+    },
+    "hook": {
+      "enabled": true,
+      "panel": true,
+      "animation": "fade",
+      "y": 0.06,
+      "seconds": 3.0
+    },
+    "captions": {
+      "preset": "cinematic",
+      "position": "bottom",
+      "max_lines": 2,
+      "max_words": 5
+    },
+    "motion": {
+      "accent": "line",
+      "entrance": "fade",
+      "seconds": 2.0
+    },
+    "layout": {
+      "preference": "context",
+      "split_supported": true
+    },
+    "logo": {
+      "enabled": false,
+      "text": "OpenShorts",
+      "position": "top-left"
+    },
+    "transition": "cut",
+    "audio": {
+      "preset": "natural",
+      "target": -16.0,
+      "ceiling": -2.0,
+      "fade": 0.0,
+      "noise": false
+    }
+  },
+  {
+    "version": 1,
+    "id": "podcast",
+    "name": "OpenShorts Podcast",
+    "fonts": {
+      "family": "Arial",
+      "caption_size": 54.0,
+      "hook_scale": 1.0
+    },
+    "colors": {
+      "base": "#15191E",
+      "text": "#FFFFFF",
+      "primary": "#00FFFF",
+      "secondary": "#FFD966",
+      "outline": "#111418"
+    },
+    "borders": {
+      "width": 3.0,
+      "shadow": 1.0
+    },
+    "safe": {
+      "side": 0.12,
+      "top": 0.12,
+      "bottom": 0.2
+    },
+    "hook": {
+      "enabled": true,
+      "panel": false,
+      "animation": "fade",
+      "y": 0.06,
+      "seconds": 3.0
+    },
+    "captions": {
+      "preset": "clean-podcast",
+      "position": "bottom",
+      "max_lines": 2,
+      "max_words": 6
+    },
+    "motion": {
+      "accent": "none",
+      "entrance": "fade",
+      "seconds": 2.0
+    },
+    "layout": {
+      "preference": "subject",
+      "split_supported": true
+    },
+    "logo": {
+      "enabled": false,
+      "text": "OpenShorts",
+      "position": "top-left"
+    },
+    "transition": "cut",
+    "audio": {
+      "preset": "dialogue",
+      "target": -16.0,
+      "ceiling": -2.0,
+      "fade": 0.0,
+      "noise": false
+    }
+  },
+  {
+    "version": 1,
+    "id": "challenge",
+    "name": "OpenShorts Challenge",
+    "fonts": {
+      "family": "Anton",
+      "caption_size": 220.0,
+      "hook_scale": 1.15
+    },
+    "colors": {
+      "base": "#15191E",
+      "text": "#FFFFFF",
+      "primary": "#FFE500",
+      "secondary": "#00D9EC",
+      "outline": "#111418"
+    },
+    "borders": {
+      "width": 14.0,
+      "shadow": 1.0
+    },
+    "safe": {
+      "side": 0.12,
+      "top": 0.12,
+      "bottom": 0.2
+    },
+    "hook": {
+      "enabled": true,
+      "panel": false,
+      "animation": "scale-pop",
+      "y": 0.06,
+      "seconds": 3.0
+    },
+    "captions": {
+      "preset": "creator-bold",
+      "position": "bottom",
+      "max_lines": 2,
+      "max_words": 4
+    },
+    "motion": {
+      "accent": "corner",
+      "entrance": "slide",
+      "seconds": 2.0
+    },
+    "layout": {
+      "preference": "preserve",
+      "split_supported": true
+    },
+    "logo": {
+      "enabled": false,
+      "text": "OpenShorts",
+      "position": "top-left"
+    },
+    "transition": "cut",
+    "audio": {
+      "preset": "natural",
+      "target": -16.0,
+      "ceiling": -2.0,
+      "fade": 0.0,
+      "noise": false
+    }
+  }
+]

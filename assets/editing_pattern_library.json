@@ -1,0 +1,763 @@
+{
+  "version": 1,
+  "reference_study": "TASK-OPENSHORTS-AI-EDITOR-009",
+  "training_enabled": false,
+  "skills": [
+    {
+      "id": "high_stakes_hook",
+      "version": 1,
+      "description": "Preserve an actual premise and stated consequence; existing hook text must be a retained quote.",
+      "triggers": [
+        "HOOK",
+        "STAKES"
+      ],
+      "visual_required": false,
+      "evidence_examples": [
+        {
+          "reference": "ref-01",
+          "start": 0,
+          "end": 6.34,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        },
+        {
+          "reference": "ref-04",
+          "start": 0,
+          "end": 3.82,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        }
+      ],
+      "applicable_categories": [
+        "challenge"
+      ],
+      "applicable_story_situations": [
+        "HOOK",
+        "STAKES"
+      ],
+      "required_source_evidence": [
+        "retained aligned transcript",
+        "source/output mapping"
+      ],
+      "intended_effect": "Preserve an actual premise and stated consequence; existing hook text must be a retained quote.",
+      "adapter": "clean_jump_cut",
+      "rendering_requirements": [
+        "existing native Director",
+        "crop/category/conflict validation"
+      ],
+      "safe_parameter_ranges": {
+        "duration_seconds": [
+          0.35,
+          5
+        ],
+        "zoom": [
+          1,
+          1.1
+        ],
+        "camera_gap_seconds": [
+          5,
+          60
+        ]
+      },
+      "conflicts": [
+        "overlapping camera transforms",
+        "unsafe subject crop",
+        "unsupported temporal retiming",
+        "manual override"
+      ],
+      "incompatible_situations": [
+        "unverified visual claims",
+        "sports or podcast without explicit matching category policy"
+      ],
+      "fallback": "Preserve source timing and composition with no optional effect.",
+      "quality_validation": [
+        "unchanged source chronology",
+        "exact quote timing",
+        "no subject crop loss",
+        "same duration/audio",
+        "save/reopen"
+      ],
+      "review_status": "agent-evidence-reviewed; independent human aesthetic review pending",
+      "ground_truth_virality": false
+    },
+    {
+      "id": "important_number",
+      "version": 1,
+      "description": "Emphasize exact aligned spoken numerals without changing value or units.",
+      "triggers": [
+        "IMPORTANT_NUMBER"
+      ],
+      "visual_required": false,
+      "evidence_examples": [
+        {
+          "reference": "ref-01",
+          "start": 4.32,
+          "end": 6.34,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        },
+        {
+          "reference": "ref-02",
+          "start": 9.68,
+          "end": 13.7,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        },
+        {
+          "reference": "ref-03",
+          "start": 5.58,
+          "end": 11.74,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        },
+        {
+          "reference": "ref-05",
+          "start": 7.68,
+          "end": 10.34,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        },
+        {
+          "reference": "ref-06",
+          "start": 12.11,
+          "end": 16.25,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        }
+      ],
+      "applicable_categories": [
+        "challenge"
+      ],
+      "applicable_story_situations": [
+        "IMPORTANT_NUMBER"
+      ],
+      "required_source_evidence": [
+        "retained aligned transcript",
+        "source/output mapping"
+      ],
+      "intended_effect": "Emphasize exact aligned spoken numerals without changing value or units.",
+      "adapter": "number_highlight",
+      "rendering_requirements": [
+        "existing native Director",
+        "crop/category/conflict validation"
+      ],
+      "safe_parameter_ranges": {
+        "duration_seconds": [
+          0.35,
+          5
+        ],
+        "zoom": [
+          1,
+          1.1
+        ],
+        "camera_gap_seconds": [
+          5,
+          60
+        ]
+      },
+      "conflicts": [
+        "overlapping camera transforms",
+        "unsafe subject crop",
+        "unsupported temporal retiming",
+        "manual override"
+      ],
+      "incompatible_situations": [
+        "unverified visual claims",
+        "sports or podcast without explicit matching category policy"
+      ],
+      "fallback": "Preserve source timing and composition with no optional effect.",
+      "quality_validation": [
+        "unchanged source chronology",
+        "exact quote timing",
+        "no subject crop loss",
+        "same duration/audio",
+        "save/reopen"
+      ],
+      "review_status": "agent-evidence-reviewed; independent human aesthetic review pending",
+      "ground_truth_virality": false
+    },
+    {
+      "id": "challenge_tension",
+      "version": 1,
+      "description": "Protect rules and choice context; do not manufacture suspense by reordering.",
+      "triggers": [
+        "CHALLENGE_PREMISE",
+        "STAKES",
+        "ATTEMPT_START",
+        "FAILURE"
+      ],
+      "visual_required": false,
+      "evidence_examples": [
+        {
+          "reference": "ref-02",
+          "start": 16.98,
+          "end": 27.14,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        }
+      ],
+      "applicable_categories": [
+        "challenge"
+      ],
+      "applicable_story_situations": [
+        "CHALLENGE_PREMISE",
+        "STAKES",
+        "ATTEMPT_START",
+        "FAILURE"
+      ],
+      "required_source_evidence": [
+        "retained aligned transcript",
+        "source/output mapping"
+      ],
+      "intended_effect": "Protect rules and choice context; do not manufacture suspense by reordering.",
+      "adapter": "clean_jump_cut",
+      "rendering_requirements": [
+        "existing native Director",
+        "crop/category/conflict validation"
+      ],
+      "safe_parameter_ranges": {
+        "duration_seconds": [
+          0.35,
+          5
+        ],
+        "zoom": [
+          1,
+          1.1
+        ],
+        "camera_gap_seconds": [
+          5,
+          60
+        ]
+      },
+      "conflicts": [
+        "overlapping camera transforms",
+        "unsafe subject crop",
+        "unsupported temporal retiming",
+        "manual override"
+      ],
+      "incompatible_situations": [
+        "unverified visual claims",
+        "sports or podcast without explicit matching category policy"
+      ],
+      "fallback": "Preserve source timing and composition with no optional effect.",
+      "quality_validation": [
+        "unchanged source chronology",
+        "exact quote timing",
+        "no subject crop loss",
+        "same duration/audio",
+        "save/reopen"
+      ],
+      "review_status": "agent-evidence-reviewed; independent human aesthetic review pending",
+      "ground_truth_virality": false
+    },
+    {
+      "id": "reaction",
+      "version": 1,
+      "description": "Retain visible response; magnification is optional and must retain all subjects.",
+      "triggers": [
+        "UNEXPECTED_REACTION"
+      ],
+      "visual_required": true,
+      "evidence_examples": [
+        {
+          "reference": "ref-01",
+          "start": 7.3,
+          "end": 7.4,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        },
+        {
+          "reference": "ref-02",
+          "start": 26.16,
+          "end": 26.26,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        },
+        {
+          "reference": "ref-06",
+          "start": 22.5,
+          "end": 22.6,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        }
+      ],
+      "applicable_categories": [
+        "challenge"
+      ],
+      "applicable_story_situations": [
+        "UNEXPECTED_REACTION"
+      ],
+      "required_source_evidence": [
+        "retained visual observation",
+        "source/output mapping"
+      ],
+      "intended_effect": "Retain visible response; magnification is optional and must retain all subjects.",
+      "adapter": "snap_zoom",
+      "rendering_requirements": [
+        "existing native Director",
+        "crop/category/conflict validation"
+      ],
+      "safe_parameter_ranges": {
+        "duration_seconds": [
+          0.35,
+          5
+        ],
+        "zoom": [
+          1,
+          1.1
+        ],
+        "camera_gap_seconds": [
+          5,
+          60
+        ]
+      },
+      "conflicts": [
+        "overlapping camera transforms",
+        "unsafe subject crop",
+        "unsupported temporal retiming",
+        "manual override"
+      ],
+      "incompatible_situations": [
+        "unverified visual claims",
+        "sports or podcast without explicit matching category policy"
+      ],
+      "fallback": "Preserve source timing and composition with no optional effect.",
+      "quality_validation": [
+        "unchanged source chronology",
+        "exact quote timing",
+        "no subject crop loss",
+        "same duration/audio",
+        "save/reopen"
+      ],
+      "review_status": "agent-evidence-reviewed; independent human aesthetic review pending",
+      "ground_truth_virality": false
+    },
+    {
+      "id": "before_after",
+      "version": 1,
+      "description": "Preserve source comparison context; the references establish spoken earlier sizes and current fit, not a synthesized earlier-body image.",
+      "triggers": [
+        "BEFORE_AFTER_COMPARISON"
+      ],
+      "visual_required": true,
+      "evidence_examples": [
+        {
+          "reference": "ref-03",
+          "start": 5.58,
+          "end": 15.2,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        },
+        {
+          "reference": "ref-03",
+          "start": 19.63,
+          "end": 28.64,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        }
+      ],
+      "applicable_categories": [
+        "challenge"
+      ],
+      "applicable_story_situations": [
+        "BEFORE_AFTER_COMPARISON"
+      ],
+      "required_source_evidence": [
+        "retained visual observation",
+        "source/output mapping"
+      ],
+      "intended_effect": "Preserve source comparison context; the references establish spoken earlier sizes and current fit, not a synthesized earlier-body image.",
+      "adapter": "context_wide",
+      "rendering_requirements": [
+        "existing native Director",
+        "crop/category/conflict validation"
+      ],
+      "safe_parameter_ranges": {
+        "duration_seconds": [
+          0.35,
+          5
+        ],
+        "zoom": [
+          1,
+          1.1
+        ],
+        "camera_gap_seconds": [
+          5,
+          60
+        ]
+      },
+      "conflicts": [
+        "overlapping camera transforms",
+        "unsafe subject crop",
+        "unsupported temporal retiming",
+        "manual override"
+      ],
+      "incompatible_situations": [
+        "unverified visual claims",
+        "sports or podcast without explicit matching category policy"
+      ],
+      "fallback": "Preserve source timing and composition with no optional effect.",
+      "quality_validation": [
+        "unchanged source chronology",
+        "exact quote timing",
+        "no subject crop loss",
+        "same duration/audio",
+        "save/reopen"
+      ],
+      "review_status": "agent-evidence-reviewed; independent human aesthetic review pending",
+      "ground_truth_virality": false
+    },
+    {
+      "id": "progression",
+      "version": 1,
+      "description": "Keep distinct retained milestones in source order; never synthesize missing stages.",
+      "triggers": [
+        "ATTEMPT_PROGRESS",
+        "MILESTONE"
+      ],
+      "visual_required": false,
+      "evidence_examples": [
+        {
+          "reference": "ref-05",
+          "start": 0,
+          "end": 26.46,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        }
+      ],
+      "applicable_categories": [
+        "challenge"
+      ],
+      "applicable_story_situations": [
+        "ATTEMPT_PROGRESS",
+        "MILESTONE"
+      ],
+      "required_source_evidence": [
+        "retained aligned transcript",
+        "source/output mapping"
+      ],
+      "intended_effect": "Keep distinct retained milestones in source order; never synthesize missing stages.",
+      "adapter": "clean_jump_cut",
+      "rendering_requirements": [
+        "existing native Director",
+        "crop/category/conflict validation"
+      ],
+      "safe_parameter_ranges": {
+        "duration_seconds": [
+          0.35,
+          5
+        ],
+        "zoom": [
+          1,
+          1.1
+        ],
+        "camera_gap_seconds": [
+          5,
+          60
+        ]
+      },
+      "conflicts": [
+        "overlapping camera transforms",
+        "unsafe subject crop",
+        "unsupported temporal retiming",
+        "manual override"
+      ],
+      "incompatible_situations": [
+        "unverified visual claims",
+        "sports or podcast without explicit matching category policy"
+      ],
+      "fallback": "Preserve source timing and composition with no optional effect.",
+      "quality_validation": [
+        "unchanged source chronology",
+        "exact quote timing",
+        "no subject crop loss",
+        "same duration/audio",
+        "save/reopen"
+      ],
+      "review_status": "agent-evidence-reviewed; independent human aesthetic review pending",
+      "ground_truth_virality": false
+    },
+    {
+      "id": "reveal",
+      "version": 1,
+      "description": "Preserve lead-in, result visibility and immediate reaction; gentle camera release only when safe.",
+      "triggers": [
+        "STORY_PAYOFF",
+        "TRANSFORMATION_REVEAL"
+      ],
+      "visual_required": true,
+      "evidence_examples": [
+        {
+          "reference": "ref-03",
+          "start": 19.63,
+          "end": 28.64,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        },
+        {
+          "reference": "ref-06",
+          "start": 12.11,
+          "end": 22.5,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        }
+      ],
+      "applicable_categories": [
+        "challenge"
+      ],
+      "applicable_story_situations": [
+        "STORY_PAYOFF",
+        "TRANSFORMATION_REVEAL"
+      ],
+      "required_source_evidence": [
+        "retained visual observation",
+        "source/output mapping"
+      ],
+      "intended_effect": "Preserve lead-in, result visibility and immediate reaction; gentle camera release only when safe.",
+      "adapter": "smooth_zoom_out",
+      "rendering_requirements": [
+        "existing native Director",
+        "crop/category/conflict validation"
+      ],
+      "safe_parameter_ranges": {
+        "duration_seconds": [
+          0.35,
+          5
+        ],
+        "zoom": [
+          1,
+          1.1
+        ],
+        "camera_gap_seconds": [
+          5,
+          60
+        ]
+      },
+      "conflicts": [
+        "overlapping camera transforms",
+        "unsafe subject crop",
+        "unsupported temporal retiming",
+        "manual override"
+      ],
+      "incompatible_situations": [
+        "unverified visual claims",
+        "sports or podcast without explicit matching category policy"
+      ],
+      "fallback": "Preserve source timing and composition with no optional effect.",
+      "quality_validation": [
+        "unchanged source chronology",
+        "exact quote timing",
+        "no subject crop loss",
+        "same duration/audio",
+        "save/reopen"
+      ],
+      "review_status": "agent-evidence-reviewed; independent human aesthetic review pending",
+      "ground_truth_virality": false
+    },
+    {
+      "id": "emotional",
+      "version": 1,
+      "description": "Protect natural pauses; suppress decorative camera cues during personal statements.",
+      "triggers": [
+        "EMOTIONAL_MOMENT"
+      ],
+      "visual_required": false,
+      "evidence_examples": [
+        {
+          "reference": "ref-05",
+          "start": 18.56,
+          "end": 28.38,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        },
+        {
+          "reference": "ref-06",
+          "start": 24.93,
+          "end": 26.97,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        }
+      ],
+      "applicable_categories": [
+        "challenge"
+      ],
+      "applicable_story_situations": [
+        "EMOTIONAL_MOMENT"
+      ],
+      "required_source_evidence": [
+        "retained aligned transcript",
+        "source/output mapping"
+      ],
+      "intended_effect": "Protect natural pauses; suppress decorative camera cues during personal statements.",
+      "adapter": "clean_jump_cut",
+      "rendering_requirements": [
+        "existing native Director",
+        "crop/category/conflict validation"
+      ],
+      "safe_parameter_ranges": {
+        "duration_seconds": [
+          0.35,
+          5
+        ],
+        "zoom": [
+          1,
+          1.1
+        ],
+        "camera_gap_seconds": [
+          5,
+          60
+        ]
+      },
+      "conflicts": [
+        "overlapping camera transforms",
+        "unsafe subject crop",
+        "unsupported temporal retiming",
+        "manual override"
+      ],
+      "incompatible_situations": [
+        "unverified visual claims",
+        "sports or podcast without explicit matching category policy"
+      ],
+      "fallback": "Preserve source timing and composition with no optional effect.",
+      "quality_validation": [
+        "unchanged source chronology",
+        "exact quote timing",
+        "no subject crop loss",
+        "same duration/audio",
+        "save/reopen"
+      ],
+      "review_status": "agent-evidence-reviewed; independent human aesthetic review pending",
+      "ground_truth_virality": false
+    },
+    {
+      "id": "comedic",
+      "version": 1,
+      "description": "Keep setup and refusal/reaction timing; comic intent is inferred, never universal.",
+      "triggers": [
+        "COMEDIC_REACTION"
+      ],
+      "visual_required": true,
+      "evidence_examples": [
+        {
+          "reference": "ref-02",
+          "start": 32.96,
+          "end": 36.58,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        }
+      ],
+      "applicable_categories": [
+        "challenge"
+      ],
+      "applicable_story_situations": [
+        "COMEDIC_REACTION"
+      ],
+      "required_source_evidence": [
+        "retained visual observation",
+        "source/output mapping"
+      ],
+      "intended_effect": "Keep setup and refusal/reaction timing; comic intent is inferred, never universal.",
+      "adapter": "snap_zoom",
+      "rendering_requirements": [
+        "existing native Director",
+        "crop/category/conflict validation"
+      ],
+      "safe_parameter_ranges": {
+        "duration_seconds": [
+          0.35,
+          5
+        ],
+        "zoom": [
+          1,
+          1.1
+        ],
+        "camera_gap_seconds": [
+          5,
+          60
+        ]
+      },
+      "conflicts": [
+        "overlapping camera transforms",
+        "unsafe subject crop",
+        "unsupported temporal retiming",
+        "manual override"
+      ],
+      "incompatible_situations": [
+        "unverified visual claims",
+        "sports or podcast without explicit matching category policy"
+      ],
+      "fallback": "Preserve source timing and composition with no optional effect.",
+      "quality_validation": [
+        "unchanged source chronology",
+        "exact quote timing",
+        "no subject crop loss",
+        "same duration/audio",
+        "save/reopen"
+      ],
+      "review_status": "agent-evidence-reviewed; independent human aesthetic review pending",
+      "ground_truth_virality": false
+    },
+    {
+      "id": "action_continuity",
+      "version": 1,
+      "description": "Preserve action and shared context; do not speed up a decisive result.",
+      "triggers": [
+        "ATTEMPT_PROGRESS",
+        "SUCCESS"
+      ],
+      "visual_required": true,
+      "evidence_examples": [
+        {
+          "reference": "ref-01",
+          "start": 27.1,
+          "end": 27.2,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        },
+        {
+          "reference": "ref-05",
+          "start": 18.85,
+          "end": 21.35,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        },
+        {
+          "reference": "ref-06",
+          "start": 22.5,
+          "end": 23.67,
+          "evidence": "See timecoded report; sample intervals are not verified shot boundaries."
+        }
+      ],
+      "applicable_categories": [
+        "challenge"
+      ],
+      "applicable_story_situations": [
+        "ATTEMPT_PROGRESS",
+        "SUCCESS"
+      ],
+      "required_source_evidence": [
+        "retained visual observation",
+        "source/output mapping"
+      ],
+      "intended_effect": "Preserve action and shared context; do not speed up a decisive result.",
+      "adapter": "context_wide",
+      "rendering_requirements": [
+        "existing native Director",
+        "crop/category/conflict validation"
+      ],
+      "safe_parameter_ranges": {
+        "duration_seconds": [
+          0.35,
+          5
+        ],
+        "zoom": [
+          1,
+          1.1
+        ],
+        "camera_gap_seconds": [
+          5,
+          60
+        ]
+      },
+      "conflicts": [
+        "overlapping camera transforms",
+        "unsafe subject crop",
+        "unsupported temporal retiming",
+        "manual override"
+      ],
+      "incompatible_situations": [
+        "unverified visual claims",
+        "sports or podcast without explicit matching category policy"
+      ],
+      "fallback": "Preserve source timing and composition with no optional effect.",
+      "quality_validation": [
+        "unchanged source chronology",
+        "exact quote timing",
+        "no subject crop loss",
+        "same duration/audio",
+        "save/reopen"
+      ],
+      "review_status": "agent-evidence-reviewed; independent human aesthetic review pending",
+      "ground_truth_virality": false
+    }
+  ]
+}
