@@ -1,0 +1,3 @@
+# Local/no-Docker requirements for OpenShorts.
+# This is the same core requirement set; cloud/billing is disabled by .env.
+-r requirements.txt

@@ -1,0 +1,4 @@
+# Local runtime plus the existing optional packages imported by cloud tests.
+-r requirements-local.txt
+-r requirements-billing.txt
+pytest==9.1.1

@@ -1,0 +1,6 @@
+-r requirements-local.txt
+pyinstaller==6.19.0
+
+# Local YouTube challenge solver; Deno runs with its default denied permissions.
+yt-dlp[default]>=2026.8.19
+deno>=2.3,<3
