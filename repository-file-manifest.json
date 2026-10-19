@@ -10,8 +10,8 @@
     {
       "path": ".gitignore",
       "section": 1,
-      "bytes": 1619,
-      "sha256": "0c81bc31e98fd24c9dcdc6dfc0a94ae833db9e9950d4c78f2d8491b92110a06d"
+      "bytes": 1632,
+      "sha256": "d33a89b675c5886666e7b59ca0104cde621062dee303c233044cad12cac8da16"
     },
     {
       "path": "GPU_SETUP_WINDOWS.md",
@@ -246,36 +246,6 @@
       "section": 2,
       "bytes": 1187,
       "sha256": "a336a0473ddf8f514257603c583b87f455882757a8a00d26520912238a6a9f10"
-    },
-    {
-      "path": "cli/openshorts.egg-info/PKG-INFO",
-      "section": 2,
-      "bytes": 1858,
-      "sha256": "7bf4b919cd70cf524ccf501863b259316ffa5fc3a97e7564c1eb650ff8df60f9"
-    },
-    {
-      "path": "cli/openshorts.egg-info/SOURCES.txt",
-      "section": 2,
-      "bytes": 222,
-      "sha256": "dd1fd5d4a21f732b96eab2b707ff5efdb58ccb7609c3591711abae7ea6b856da"
-    },
-    {
-      "path": "cli/openshorts.egg-info/dependency_links.txt",
-      "section": 2,
-      "bytes": 2,
-      "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6"
-    },
-    {
-      "path": "cli/openshorts.egg-info/entry_points.txt",
-      "section": 2,
-      "bytes": 53,
-      "sha256": "cf3c7219f020612a4ce38452299a10c0bd068fb1179bfc7d6a80ce7533804dde"
-    },
-    {
-      "path": "cli/openshorts.egg-info/top_level.txt",
-      "section": 2,
-      "bytes": 16,
-      "sha256": "9879db580c98e7cee389330af0eeca655092ae09a96f77a0f51f0ebaa1f93077"
     },
     {
       "path": "cli/openshorts_cli.py",
@@ -2746,13 +2716,13 @@
     {
       "path": "repository-commit-plan.md",
       "section": 1,
-      "bytes": 6854,
-      "sha256": "f3b7ffc85f9f1985f66ad53c01f92d22405a77e47b3ceee8bce80e2795dec38f"
+      "bytes": 7087,
+      "sha256": "6fe3e8306fa7055f747f135cbec0505f0a5cd5af5ae366b842464d4fa738bbe5"
     },
     {
       "path": "repository-file-manifest.json",
       "section": 1,
-      "bytes": 122245,
+      "bytes": 121290,
       "sha256": null
     },
     {
@@ -3891,7 +3861,7 @@
   },
   "section_counts": {
     "1": 80,
-    "2": 78,
+    "2": 73,
     "3": 17,
     "4": 15,
     "5": 17,
@@ -3901,8 +3871,8 @@
     "9": 23
   },
   "section_bytes": {
-    "1": 703622,
-    "2": 897461,
+    "1": 702913,
+    "2": 895310,
     "3": 397694,
     "4": 96708,
     "5": 297737,

@@ -12,10 +12,14 @@ The exact per-file section assignment is in `repository-file-manifest.json`.
 The manifest includes the prior remote README, LICENSE and .gitignore, which
 will be updated in section 1 without rewriting their existing commit.
 
+During the section 2 staged review, generated `cli/*.egg-info` was found and
+excluded. The final manifest and .gitignore correction are included with the
+section 2 commit; no application source was modified for this correction.
+
 | Section | Commit message | Files | Bytes |
 | --- | --- | ---: | ---: |
-| 1 | `chore(repo): initialize OpenShorts Studio source repository` | 80 | 700,651 |
-| 2 | `feat(engine): add authenticated desktop backend and workers` | 78 | 897,461 |
+| 1 | `chore(repo): initialize OpenShorts Studio source repository` | 80 | 703,635 |
+| 2 | `feat(engine): add authenticated desktop backend and workers` | 73 | 895,310 |
 | 3 | `feat(ai): add multimodal analysis and clip discovery` | 17 | 397,694 |
 | 4 | `feat(ml): add local learning and knowledge foundation` | 15 | 96,708 |
 | 5 | `feat(editor): add autonomous editing and Smart Split` | 17 | 297,737 |
@@ -34,7 +38,7 @@ will be updated in section 1 without rewriting their existing commit.
 
 ### Section 2
 
-- Important paths: `desktop` (30), `cloud` (25), `cli` (8), `app.py` (1), `desktop_entry.py` (1), `file_hosts.py` (1).
+- Important paths: `desktop` (30), `cloud` (25), `cli` (3), `app.py` (1), `desktop_entry.py` (1), `file_hosts.py` (1).
 - Largest files: `app.py` (342,125 B), `saasshorts.py` (60,237 B), `cloud/billing.py` (32,978 B).
 - Secret scan: no findings.
 
