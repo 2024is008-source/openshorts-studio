@@ -1,0 +1,14 @@
+{
+  "width": 320,
+  "height": 180,
+  "fps": 12,
+  "cases": [
+    {"name": "one_speaker", "faces": [[140, 28, 40, 50]], "layout": "CENTER"},
+    {"name": "two_speakers", "faces": [[35, 30, 40, 55], [245, 30, 40, 55]], "layout": "BLUR"},
+    {"name": "two_speakers_uninspected", "faces": [[35, 30, 40, 55], [245, 30, 40, 55]], "layout": "BLUR"},
+    {"name": "wide_supermarket", "faces": [], "layout": "BLUR"},
+    {"name": "treadmill_action", "faces": [[140, 28, 40, 50]], "body": [65, 10, 190, 165], "layout": "BLUR"},
+    {"name": "group_conversation", "faces": [[20, 30, 35, 50], [140, 30, 35, 50], [260, 30, 35, 50]], "layout": "BLUR"},
+    {"name": "no_visible_face", "faces": [], "layout": "BLUR"}
+  ]
+}

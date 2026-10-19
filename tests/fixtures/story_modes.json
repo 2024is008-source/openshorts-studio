@@ -1,0 +1,7 @@
+{
+  "challenge": ["We must finish ten laps to earn the donation.", "The last lap took longer than we expected.", "We finished ten laps and earned the donation."],
+  "emotional": ["I was afraid we would lose our family home.", "My sister offered us a place to stay.", "Having her support meant everything to me."],
+  "comedy": ["I bought a robot to make breakfast.", "I asked it to bring me a toast.", "It raised a glass and congratulated me."],
+  "podcast": ["Why did you decide to change careers?", "I wanted time to teach and built a class after work.", "Teaching that class helped me make the decision."],
+  "educational": ["How can we check whether the soil needs water?", "Push a finger into the soil to check moisture below the surface.", "Water when that layer is dry rather than following a fixed schedule."]
+}

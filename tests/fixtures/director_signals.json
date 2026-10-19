@@ -1,0 +1,17 @@
+{
+  "width": 320,
+  "height": 180,
+  "fps": 10.0,
+  "source_duration": 50.0,
+  "segments": [{"start": 10.0, "end": 11.0}, {"start": 40.0, "end": 41.0}],
+  "transcript": {"segments": [
+    {"start": 10.0, "end": 11.0, "words": [
+      {"word": " Can", "start": 10.1, "end": 10.3},
+      {"word": " we finish?", "start": 10.4, "end": 10.9}
+    ]},
+    {"start": 40.0, "end": 41.0, "words": [
+      {"word": " We finished.", "start": 40.1, "end": 40.9}
+    ]}
+  ]},
+  "analysis": {"moments": [{"start": 40.0, "end": 41.0, "editing_kind": "challenge", "preserve_context": true, "visual_evidence": "The result and both participants are visible."}]}
+}
